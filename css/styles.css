@@ -1,0 +1,76 @@
+html,
+body {
+    height: 100%;
+    font-size: 15px;
+    margin: 0px;
+    font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+h3 {
+    color: #FFF;
+    text-align: center;
+    font-size: 25px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 0.25fr 1.75fr;
+    grid-template-rows: 0.1fr 1.9fr;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "Nav Header"
+        "Nav Content";
+    height: 100%;
+}
+
+.Nav {
+    grid-area: Nav;
+    background-color: #555;
+}
+
+.Content {
+    grid-area: Content;
+}
+
+.Header {
+    grid-area: Header;
+}
+
+/* Drop Down Menu */
+details {
+    color: #FFF;
+}
+
+summary {
+    padding: 10px;
+    background-color: #333;
+}
+
+details ul {
+    color: #FFF;
+    padding-bottom: 15px;
+    padding-left: 4px;
+    margin: 0;
+    border: 1px solid #000;
+}
+
+details li {
+    margin-left: 10px;
+    margin-top: 10px;
+    list-style: none;
+}
+
+details a {
+    cursor: pointer;
+}
+
+/* Map Styling */
+.search-input,
+.leaflet-control-search {
+    max-width: 800px;
+}
+
+.leaflet-popup-content {
+    width: 250px !important;
+}

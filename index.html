@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WikiTree Maps</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""> </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="css/leaflet-view-meta.css">
+    <script src="js/leaflet-view-meta.js"></script>
+    <link rel="stylesheet" href="css/leaflet.legend.css" />
+    <script type="text/javascript" src="js/leaflet.legend.js"></script>
+    <link rel="stylesheet" href="css/leaflet-search.css" />
+    <script src="js/leaflet-search.js"></script>
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Map Files -->
+    <script src="js/cemMap.js"></script>
+    <script src="js/opsMap.js"></script>
+    <script src="js/catMap.js"></script>
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="Header"></div>
+        <div class="Nav">
+            <h3>WikiTree Maps</h3>
+            <details open>
+                <summary>Public Maps</summary>
+                <ul>
+                    <li><a onclick="cemMap()">Cemeteries</a></li>
+                    <li><a onclick="opsMap()">One Place Studies</a></li>
+                </ul>
+            </details>
+            <details>
+                <summary>More Maps</summary>
+                <li><a>Coming soon?</a></li>
+            </details>
+        </div>
+        <div id="map"></div>
+    </div>
+    <script>
+        var checkExist = setInterval(function () {
+            if ($('.leaflet-marker-icon').length) {
+                $('#loader').remove();
+                clearInterval(checkExist);
+            }
+        }, 10);
+    </script>
+</body>
+
+</html>
