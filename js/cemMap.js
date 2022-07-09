@@ -1,8 +1,22 @@
 function cemMap() {
-    // Remove and Reload Map
+    // Leaflet cannot 'redraw' a map once initialized
+    // So we need to remove and reload the Header/Map
     $('#map').remove();
-    $('.container').append('<div id="map"></div>');
+    $('.Header').remove();
+    $('.container').append('<div class="Header"><p>WikiTree maintains coordinates for <span id="NoCems"></span> cemeteries. <a target="_blank"' +
+        'href="https://www.wikitree.com/wiki/Project:Cemeterist">Would you like to help expand our database?</a></div>');
+    $('.container').append('<div id="loader"><img id="loader-img" src="images/loading.gif" /><div id="map"></div>');
+
+    // You guessed it, show a loader until map is ready
+    var checkExist = setInterval(function () {
+        if ($('.leaflet-marker-icon').length) {
+            $('#loader').remove();
+            clearInterval(checkExist);
+        }
+    }, 10);
+
     // Base Map Themes
+    // Jawg has 50K monthly credit on the access token
     var jawgL = L.tileLayer('https://{s}.tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
         maxZoom: 18,
         attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank" class="jawg-attrib">&copy; <b>Jawg</b>Maps</a> | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>',
@@ -11,23 +25,21 @@ function cemMap() {
         osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '<a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>'
+        }),
+        jawgD = L.tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+            maxZoom: 18,
+            attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank" class="jawg-attrib">&copy; <b>Jawg</b>Maps</a> | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>',
+            accessToken: 'dZuldnTraznHfIdJdOvxURkgZoe4OgvnQpDkQhaZbKOBxGiWxXqisDJEAiPGnoWy'
+        }),
+        jawgS = L.tileLayer('https://{s}.tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+            maxZoom: 18,
+            attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank" class="jawg-attrib">&copy; <b>Jawg</b>Maps</a> | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>',
+            accessToken: 'dZuldnTraznHfIdJdOvxURkgZoe4OgvnQpDkQhaZbKOBxGiWxXqisDJEAiPGnoWy'
+        }),
+        esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 18,
+            attribution: '&copy; Esri | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>'
         });
-    jawgD = L.tileLayer('https://{s}.tile.jawg.io/jawg-dark/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
-        maxZoom: 18,
-        attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank" class="jawg-attrib">&copy; <b>Jawg</b>Maps</a> | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>',
-        accessToken: 'dZuldnTraznHfIdJdOvxURkgZoe4OgvnQpDkQhaZbKOBxGiWxXqisDJEAiPGnoWy'
-    });
-    jawgS = L.tileLayer('https://{s}.tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
-        maxZoom: 18,
-        attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank" class="jawg-attrib">&copy; <b>Jawg</b>Maps</a> | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>',
-        accessToken: 'dZuldnTraznHfIdJdOvxURkgZoe4OgvnQpDkQhaZbKOBxGiWxXqisDJEAiPGnoWy'
-    });
-    esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 18,
-        attribution: '&copy; Esri | <a href="https://www.openstreetmap.org/copyright" title="OpenStreetMap is open data licensed under ODbL" target="_blank" class="osm-attrib">&copy; OSM contributors</a> | <a href="https://www.wikitree.com" title="Data courtesy of WikiTree" target="_blank">&copy; WikiTree contributors</a>'
-    });
-
-    var tiles = L.layerGroup([jawgL, osm, jawgD, jawgS, esri]);
 
     var baseMaps = {
         "OpenStreetMap": osm,
@@ -37,6 +49,7 @@ function cemMap() {
         "Jawg Light": jawgL
     }
 
+    // Draw the map with the default OSM theme
     var map = new L.map('map', {
         layers: [osm],
         center: new L.LatLng(0, 0),
@@ -44,27 +57,38 @@ function cemMap() {
         loadingControl: true
     });
 
+    //Add a Layer Control so user can choose the map theme
     var layerControl = L.control.layers(baseMaps).addTo(map);
     L.control.viewMeta({}).addTo(map);
 
+    // Enable Marker Clusters
     var markers = new L.MarkerClusterGroup({
         maxClusterRadius: 120,
         spiderfyDistanceMultiplier: 1
     });
 
+    // Get the CIB Cemetery JSON
     $.getJSON("https://wikitree.sdms.si/Categories/CIBCemetery.json", function (data) {
+        // Extract JSON Data to show to user
+        var NoCems = data.features.length;
+        document.getElementById('NoCems').innerHTML = NoCems.toLocaleString();
+
+        // Populated markers and Popups with JSON data
         var marker = L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
-                
                 if (feature.properties.Default['Profiles Nr.'] > 1) { var s = 's' } else { var s = '' };
                 layer.bindPopup('<span style="font-weight: bold;">' + feature.properties.Default.name + '</span><br>' +
                     '&nbsp;&nbsp;&rarr; <a target="_blank" href="https://www.wikitree.com/wiki/Category:' + feature.properties.Default['Category Wiki'] + '">' + feature.properties.Default['Profiles Nr.'] + ' Documented Burial' + s + '</a><br>' +
                     '&nbsp;&nbsp;&rarr; <a target="_blank" href="https://wikitree.sdms.si/findmap.htm?aid=' + feature.properties.Default.Category + '&grouptype=C"> WikiTree+ Profile Map</a>'
                 )
-                
+
             },
+            // Aleš is providing more than just user-submitted Coordinates
+            // Check the z-coordinate to figure out where the data came from
             pointToLayer: function (feature, latlng, title) {
+                // z-coord 1 is the CIB
                 if (latlng.alt == 1) {
+                    // Define marker icons so we can color code based on profile counts
                     var goldIcon = L.icon({
                         iconUrl: 'images/marker-icon-2x-gold.png',
                         shadowUrl: 'images/marker-shadow.png',
@@ -113,6 +137,7 @@ function cemMap() {
                         popupAnchor: [1, -34],
                         shadowSize: [41, 41]
                     });
+                    // Check the profile counts and set a marker 
                     if (feature.properties.Default['Profiles Nr.'] >= 1 && feature.properties.Default['Profiles Nr.'] <= 5) {
                         return L.marker(latlng, {
                             'title': feature.properties.Default.Category,
@@ -148,6 +173,7 @@ function cemMap() {
                         icon: blackIcon
                     });
                 }
+                // z-coord 2 is WikiData
                 else if (latlng.alt == 2) {
                     var xIcon = L.icon({
                         iconUrl: 'images/wikidata.png',
@@ -165,6 +191,7 @@ function cemMap() {
     })
     map.addLayer(markers);
 
+    // Add a WikiTree watermark
     L.Control.Watermark = L.Control.extend({
         onAdd: function (map) {
             var img = L.DomUtil.create('img');
@@ -178,7 +205,7 @@ function cemMap() {
     };
     L.control.watermark({ position: 'bottomleft' }).addTo(map);
 
-    // Add Legend
+    // Add a Legend
     L.control.Legend({
         position: "topleft",
         title: "Marker Legend",

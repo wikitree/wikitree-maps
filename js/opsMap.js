@@ -1,7 +1,22 @@
 function opsMap() {
-    // Remove and Reload Map
+    // Leaflet cannot 'redraw' a map once initialized
+    // Remove and reload the Header/Map based on current data
     $('#map').remove();
-    $('.container').append('<div id="map"></div>');
+    $('.Header').remove();
+    $('.container').append('<div class="Header"><p>WikiTree maintains coordinates for <span id="NoOPS"></span> Place Studies. <a target="_blank"' +
+        'href="https://www.wikitree.com/wiki/Project:One Place Studies">Would you like to help expand our database?</a></div>');
+    $('.container').append('<div id="loader"><img id="loader-img" src="images/loading.gif" /></div><div id="map"></div>');
+
+    // You guessed it, show a loader until maop is ready
+    var checkExist = setInterval(function () {
+        if ($('.leaflet-marker-icon').length) {
+            $('#loader').remove();
+            clearInterval(checkExist);
+        }
+    }, 10);
+
+    // Base Map Themes
+    // Jawg has 50K monthly credit on the access token
     // Base Map Themes
     var jawgL = L.tileLayer('https://{s}.tile.jawg.io/jawg-light/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
         maxZoom: 18,
@@ -37,6 +52,7 @@ function opsMap() {
         "Jawg Light": jawgL
     }
 
+    // Draw the map with the default OSM theme
     var map = new L.map('map', {
         layers: [osm],
         center: new L.LatLng(0, 0),
@@ -44,21 +60,29 @@ function opsMap() {
         loadingControl: true
     });
 
+    //Add a Layer Control so user can choose the map theme
     var layerControl = L.control.layers(baseMaps).addTo(map);
     L.control.viewMeta({}).addTo(map);
 
+    // Enable Marker Clusters
     var markers = new L.MarkerClusterGroup({
         maxClusterRadius: 100,
         spiderfyDistanceMultiplier: 1
     });
 
+    // Get the CIB OPS JSON
     $.getJSON("https://wikitree.sdms.si/Categories/CIBOnePlaceStudy.json", function (data) {
+        // Extract JSON Data to show to user
+        var NoOPS = data.features.length;
+        document.getElementById('NoOPS').innerHTML = NoOPS.toLocaleString();
+
+        // Populated markers and Popups with JSON data
         var marker = L.geoJSON(data, {
             onEachFeature: function (feature, layer) {
                 if (feature.properties.Default.Category.includes("Place Study") === true) {
-                    layer.bindPopup('<span style="font-weight: bold;">'+
-                    '<a target="_blank" href="https://www.wikitree.com/wiki/Category:' + feature.properties.Default.Category +
-                    '">' + feature.properties.Default.Category + '</a></span>')
+                    layer.bindPopup('<span style="font-weight: bold;">' +
+                        '<a target="_blank" href="https://www.wikitree.com/wiki/Category:' + feature.properties.Default.Category +
+                        '">' + feature.properties.Default.Category + '</a></span>')
                 }
             },
             pointToLayer: function (feature, latlng) {
@@ -94,6 +118,7 @@ function opsMap() {
     })
     map.addLayer(markers);
 
+    // Add a WikiTree watermark
     L.Control.Watermark = L.Control.extend({
         onAdd: function (map) {
             var img = L.DomUtil.create('img');
@@ -120,18 +145,4 @@ function opsMap() {
             }
         ]
     }).addTo(map);
-
-    /*
-    // Cemetery Search
-    map.addControl(new L.Control.Search({
-        layer: markers,
-        propertyName: 'title',
-        propertyLoc: ['lat', 'lon'],
-        initial: false,
-        zoom: 16,
-        textPlaceholder: "Search Cemetery Names...",
-        position: 'topleft',
-        collapsed: false
-    }));
-    */
 }
