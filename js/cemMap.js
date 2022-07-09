@@ -5,7 +5,7 @@ function cemMap() {
     $('.Header').remove();
     $('.container').append('<div class="Header"><p>WikiTree maintains coordinates for <span id="NoCems"></span> cemeteries. <a target="_blank"' +
         'href="https://www.wikitree.com/wiki/Project:Cemeterist">Would you like to help expand our database?</a></div>');
-    $('.container').append('<div id="loader"><img id="loader-img" src="images/loading.gif" /><div id="map"></div>');
+    $('.container').append('<div id="loader"><img id="loader-img" src="images/loading.gif" /></div><div id="map"></div>');
 
     // You guessed it, show a loader until map is ready
     var checkExist = setInterval(function () {
