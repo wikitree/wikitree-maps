@@ -23,7 +23,8 @@
     <!-- Map Files -->
     <script src="js/cemMap.js"></script>
     <script src="js/opsMap.js"></script>
-    <script src="js/catMap.js"></script>
+    <script src="js/login.js"></script>
+    <!-- <script src="js/catMap.js"></script> -->
     </script>
 </head>
 
@@ -40,8 +41,23 @@
             </details>
             <details>
                 <summary>More Maps</summary>
+                <ul>
                 <li><a>Coming soon?</a></li>
+                <li><a onclick="testLogin()">Test Login</a></li>
+                </ul>
             </details>
+            
+            <div id="logged-out">
+            <form action="https://api.wikitree.com/api.php" method="POST">
+                <input type="hidden" name="action" value="clientLogin">
+                <input type="hidden" id="returnURL" name="returnURL" value="">
+                <input type="submit" value="Login">
+            </form>
+            </div>
+            <div id="logged-in" hidden>
+                Logged in as <span id="logged-in-id"></span>.
+            </div>
+            
         </div>
         <div id="map"></div>
         <div class="Header">
